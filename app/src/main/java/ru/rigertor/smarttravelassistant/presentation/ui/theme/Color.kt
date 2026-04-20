@@ -1,4 +1,4 @@
-package ru.rigertor.smarttravelassistant.ui.theme
+package ru.rigertor.smarttravelassistant.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
