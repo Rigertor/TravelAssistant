@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartTravelAssistantTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Icons.Default.Place
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
