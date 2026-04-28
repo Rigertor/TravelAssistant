@@ -5,46 +5,58 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import ru.rigertor.smarttravelassistant.presentation.ui.theme.SmartTravelAssistantTheme
 
 class MainActivity : ComponentActivity() {
+
+//    private val apiFactory = TripApiFactory
+//    private val apiService: TripApiService = apiFactory.apiService
+//    private val repositoryImpl = TravelRepositoryImpl(apiService)
+//
+//    private val buildTripUseCase = BuildTripUseCase(repository = repositoryImpl)
+//
+//    val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+
+
+    @OptIn(ExperimentalGlideComposeApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        coroutineScope.launch {
+//            val trip = buildTripUseCase(
+//                promptTemplate = getString(R.string.prompt),
+//                userRequest = "Я хочу съездить в Нефтекамск на 4 дня"
+//            )
+//            Log.d("MainActivity", "Result: $trip")
+//        }
         enableEdgeToEdge()
         setContent {
             SmartTravelAssistantTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Icons.Default.Place
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                val neftekamsk = LatLng(56.0833, 54.2833)
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(neftekamsk, 100f)
+                }
+                val markerState = rememberUpdatedMarkerState(
+                    position = neftekamsk
+                )
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState
+                ) {
+                    Marker(
+                        state = markerState,
+                        title = "Neftekamsk",
+                        snippet = null
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SmartTravelAssistantTheme {
-        Greeting("Android")
     }
 }

@@ -1,9 +1,13 @@
 package ru.rigertor.smarttravelassistant.domain.entity
 
 data class BaseHotel(
+    val id: String,
     val name: String,
-    val lat: Double,
-    val lng: Double,
-    val reason: String,
-    val imageUrl: String
+    val nameLocal: String,
+    val location: Location,
+    val address: String,
+    val description: String,
+    val estimatedPricePerNight: Int,
+    val priceNote: String,
+    val imageQuery: String
 )
