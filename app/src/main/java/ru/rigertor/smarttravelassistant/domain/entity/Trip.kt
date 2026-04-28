@@ -1,6 +1,7 @@
 package ru.rigertor.smarttravelassistant.domain.entity
 
 data class Trip(
+    val id: String,
     val destination: String,
     val dates: String,
     val startTimestamp: Long,
@@ -10,6 +11,6 @@ data class Trip(
     val currency: String,
     val currencySymbol: String,
     val baseHotel: BaseHotel,
-    val days: DailyPlan,
+    val days: List<DailyPlan>,
     val advice: String
 )

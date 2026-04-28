@@ -7,6 +7,6 @@ class BuildTripUseCase(
 ) {
 
 
-    suspend operator fun invoke(userRequest: String) =
-        repository.buildTrip(userRequest = userRequest)
+    suspend operator fun invoke(promptTemplate: String, userRequest: String) =
+        repository.buildTrip(promptTemplate = promptTemplate, userQuery = userRequest)
 }

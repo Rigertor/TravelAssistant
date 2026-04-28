@@ -20,6 +20,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val apiKey =
+            property("apiKey")?.toString() ?: error("you should add apikey into gradle.properties")
+        buildConfigField(type = "String", name = "AI_API_KEY", "\"$apiKey\"")
+        val id =
+            property("folderId")?.toString()
+                ?: error("you should add folderId into gradle.properties")
+        buildConfigField(type = "String", name = "YANDEX_FOLDER_ID", "\"$id\"")
+        val promptId =
+            property("promptId")?.toString()
+                ?: error("you should add promptId into gradle.properties")
+        buildConfigField(type = "String", name = "YANDEX_PROMPT_ID", "\"$promptId\"")
     }
 
     buildTypes {
@@ -42,6 +54,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -55,18 +68,24 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
+    //Database room
     implementation(libs.room.core)
     ksp(libs.room.compiler)
 
+    //DI Dagger2
     implementation(libs.dagger.core)
     ksp(libs.dagger.compiler)
 
+    //Glide (images)
     implementation(libs.glide.compose)
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gsonConverter)
     implementation(libs.retrofit.logging.interceptor)
     implementation(libs.icons)
 
+    //Google maps
+    implementation(libs.maps.compose)
+    implementation(libs.maps.utils)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,6 +1,6 @@
 package ru.rigertor.smarttravelassistant.domain.entity
 
-data class DailyRout(
+data class DailyRoute(
     val totalDistance: Float,
     val transport: String,
     val transportCost: Int
