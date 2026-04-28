@@ -8,29 +8,40 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Blue20,
+    secondary = DarkGray40,
+    tertiary = Purple30,
+    background = DarkBlue10,
+    surface = DarkGray20,
+    onPrimary = White,
+    onSecondary = White,
+    onTertiary = White,
+    onBackground = LightGray80,
+    onSurface = LightGray80,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Blue20,
+    secondary = LightBlue80,
+    tertiary = LightGreen20,
+    background = LightBlue90,
+    surface = White,
+    onPrimary = White,
+    onSecondary = DarkBlue10,
+    onTertiary = DarkBlue10,
+    onBackground = DarkBlue10,
+    onSurface = DarkBlue10,
 )
+
+val LocalBackgroundGradient = staticCompositionLocalOf<Brush> {
+    error("No background gradient provided")
+}
 
 @Composable
 fun SmartTravelAssistantTheme(
@@ -49,9 +60,17 @@ fun SmartTravelAssistantTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+    val backgroundGradient = Brush.linearGradient(
+        colors = if (darkTheme) listOf(DarkBlue80, DarkBlue90)
+        else listOf(Blue20, Blue30)
     )
+    CompositionLocalProvider(
+        LocalBackgroundGradient provides backgroundGradient
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
