@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = Blue20,
     secondary = DarkGray40,
-    tertiary = Purple30,
+    tertiary = DarkBlue80,
     background = DarkBlue10,
     surface = DarkGray20,
     onPrimary = White,
@@ -29,7 +29,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Blue20,
     secondary = LightBlue80,
-    tertiary = LightGreen20,
+    tertiary = Blue10,
     background = LightBlue90,
     surface = White,
     onPrimary = White,
@@ -60,7 +60,7 @@ fun SmartTravelAssistantTheme(
         else -> LightColorScheme
     }
 
-    val backgroundGradient = Brush.linearGradient(
+    val backgroundGradient = Brush.verticalGradient(
         colors = if (darkTheme) listOf(DarkBlue80, DarkBlue90)
         else listOf(Blue20, Blue30)
     )

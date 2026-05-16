@@ -1,5 +1,7 @@
 package ru.rigertor.smarttravelassistant.data.repository
 
+import android.content.Context
+import ru.rigertor.smarttravelassistant.R
 import ru.rigertor.smarttravelassistant.data.local.db.TripHistoryDao
 import ru.rigertor.smarttravelassistant.data.mapper.escapeForPrompt
 import ru.rigertor.smarttravelassistant.data.mapper.toDbBundle
@@ -9,21 +11,22 @@ import ru.rigertor.smarttravelassistant.data.network.api.AiRequest
 import ru.rigertor.smarttravelassistant.data.network.api.TripApiService
 import ru.rigertor.smarttravelassistant.domain.entity.Trip
 import ru.rigertor.smarttravelassistant.domain.repository.TravelRepository
+import javax.inject.Inject
 
-class TravelRepositoryImpl(
+class TravelRepositoryImpl @Inject constructor(
+    private val context: Context,
     private val tripApiService: TripApiService,
     private val tripHistoryDao: TripHistoryDao
 ) : TravelRepository {
 
     override suspend fun buildTrip(
-        promptTemplate: String,
         userQuery: String,
         specialCondition: String?,
         hotelBudget: String?,
         preferencesHotel: String?
     ): Trip {
         val safeQuery = userQuery.escapeForPrompt()
-        val finalPrompt = promptTemplate
+        val finalPrompt = context.getString(R.string.prompt)
             .replace(USER_QUERY, safeQuery)
             .replace(SPECIAL_CONDITIONS, specialCondition ?: "")
             .replace(HOTEL_BUDGET, hotelBudget ?: "")

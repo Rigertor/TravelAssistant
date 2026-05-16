@@ -14,5 +14,6 @@ data class TripDto(
     @SerializedName("currency_symbol") val currencySymbol: String,
     @SerializedName("base_hotel") val baseHotel: BaseHotelDto,
     @SerializedName("days") val days: List<DailyPlanDto>,
-    @SerializedName("general_advice") val advice: String
+    @SerializedName("general_advice") val advice: String,
+    val createdAt: Long = System.currentTimeMillis()
 )

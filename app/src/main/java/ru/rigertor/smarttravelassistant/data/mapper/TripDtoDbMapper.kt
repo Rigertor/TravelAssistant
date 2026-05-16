@@ -22,7 +22,8 @@ fun TripDto.toDbBundle(): TripBundle {
         totalBudgetOnPerson = totalBudgetOnPerson,
         currency = currency,
         currencySymbol = currencySymbol,
-        advice = advice
+        advice = advice,
+        createdAt = createdAt
     )
 
     val hotel = HotelDbModel(

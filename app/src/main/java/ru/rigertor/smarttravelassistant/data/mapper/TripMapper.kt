@@ -15,8 +15,8 @@ fun TripResponseDto.toTripDto(): TripDto {
     return trip.copy(id = tripId)
 }
 
-fun String.escapeForPrompt(): String =
-    replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\n", " ")
-        .replace("\r", " ")
+fun String.escapeForPrompt(): String = trim()
+    .replace("\\", "\\\\")
+    .replace("\"", "\\\"")
+    .replace("\n", " ")
+    .replace("\r", " ")

@@ -1,12 +1,13 @@
 package ru.rigertor.smarttravelassistant.domain.usecase
 
 import ru.rigertor.smarttravelassistant.domain.repository.TravelRepository
+import javax.inject.Inject
 
-class BuildTripUseCase(
+class BuildTripUseCase @Inject constructor(
     private val repository: TravelRepository
 ) {
 
 
-    suspend operator fun invoke(promptTemplate: String, userRequest: String) =
-        repository.buildTrip(promptTemplate = promptTemplate, userQuery = userRequest)
+    suspend operator fun invoke(userRequest: String) =
+        repository.buildTrip(userQuery = userRequest)
 }
