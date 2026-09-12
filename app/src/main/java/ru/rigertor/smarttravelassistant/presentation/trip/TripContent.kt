@@ -1,7 +1,10 @@
 package ru.rigertor.smarttravelassistant.presentation.trip
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -51,9 +55,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -78,10 +85,13 @@ fun TripContent(
 
     val state by component.model.collectAsState()
 
-    val sheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.PartiallyExpanded
-        )
+    val bottomSheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.PartiallyExpanded,
+        skipHiddenState = true
+    )
+
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
     )
 
     val selectedPlan = state.currentDay
@@ -103,20 +113,39 @@ fun TripContent(
         }
     }
 
+    LaunchedEffect(selectedPlan) {
+
+        val location = selectedPlan.places.first().location
+
+        cameraPositionState.animate(
+            update = CameraUpdateFactory.newLatLngZoom(
+                LatLng(location.lat, location.lng),
+                12f
+            ),
+            durationMs = 1000
+        )
+    }
+
     BottomSheetScaffold(
         modifier = modifier.fillMaxSize(),
-        scaffoldState = sheetState,
-        sheetPeekHeight = 420.dp,
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 36.dp,
+        sheetShape = RoundedCornerShape(
+            topStart = 32.dp,
+            topEnd = 32.dp
+        ),
+        sheetMaxWidth = Dp.Unspecified,
         sheetContainerColor = MaterialTheme.colorScheme.background,
         sheetShadowElevation = 0.dp,
         sheetDragHandle = {
             Box(
                 modifier = Modifier
-                    .padding(top = 12.dp)
-                    .width(48.dp)
-                    .height(4.dp)
+                    .padding(vertical = 10.dp)
+                    .width(42.dp)
+                    .height(5.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.secondary)
+                    .clickable {}
             )
         },
         sheetContent = {
@@ -145,7 +174,7 @@ fun TripContent(
                     DaySelector(
                         days = state.trip.days,
                         selectedDay = state.currentDay.dayNumber,
-                        onDaySelected = component::onClickDay
+                        onDaySelect = component::onClickDay
                     )
                 }
 
@@ -223,12 +252,27 @@ fun TripContent(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            val mapBottomPadding by animateDpAsState(
+                targetValue = when (scaffoldState.bottomSheetState.currentValue) {
+                    SheetValue.Hidden -> 0.dp
+                    SheetValue.PartiallyExpanded -> 420.dp
+                    SheetValue.Expanded -> 700.dp
+                },
+                label = ""
+            )
 
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
                 properties = MapProperties(
                     isMyLocationEnabled = false
+                ),
+                mapColorScheme = if (isSystemInDarkTheme())
+                    ComposeMapColorScheme.DARK
+                else
+                    ComposeMapColorScheme.LIGHT,
+                contentPadding = PaddingValues(
+                    bottom = mapBottomPadding
                 ),
                 uiSettings = MapUiSettings(
                     zoomControlsEnabled = false,
@@ -254,7 +298,7 @@ fun TripContent(
             TopBar(
                 title = state.trip.destination,
                 subtitle = state.trip.dates,
-                onBackClick = {},
+                onBackClick = component::onClickBack,
                 onSettingsClick = {},
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -274,7 +318,9 @@ private fun TopBar(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(bottom = 8.dp)
+        modifier = modifier
+            .padding(bottom = 8.dp)
+            .background(MaterialTheme.colorScheme.background),
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
@@ -314,44 +360,8 @@ private fun TopBar(
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.width(80.dp))
     }
-
-//    Row(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .statusBarsPadding()
-//            .padding(horizontal = 20.dp, vertical = 12.dp),
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//
-//        IconButton(
-//            onClick = onBackClick
-//        ) {
-//
-//            Icon(
-//                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-//                contentDescription = null
-//            )
-//        }
-//
-//        Column(
-//            modifier = Modifier.weight(1f),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//
-//            Text(
-//                text = title,
-//                style = MaterialTheme.typography.headlineSmall,
-//                fontWeight = FontWeight.Bold
-//            )
-//
-//            Text(
-//                text = subtitle,
-//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-//            )
-//        }
-//    }
 }
 
 @Composable
@@ -401,7 +411,7 @@ private fun BudgetCard(
 private fun DaySelector(
     days: List<DailyPlan>,
     selectedDay: Int,
-    onDaySelected: (DailyPlan) -> Unit
+    onDaySelect: (DailyPlan) -> Unit
 ) {
 
     LazyRow(
@@ -410,11 +420,11 @@ private fun DaySelector(
 
         itemsIndexed(days) { index, day ->
 
-            val selected = index == selectedDay
+            val selected = day.dayNumber == selectedDay
 
             Surface(
                 onClick = {
-                    onDaySelected(day)
+                    onDaySelect(day)
                 },
                 shape = RoundedCornerShape(18.dp),
                 color = if (selected)

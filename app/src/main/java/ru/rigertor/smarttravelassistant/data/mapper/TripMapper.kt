@@ -12,7 +12,7 @@ fun TripResponseDto.toTripDto(): TripDto {
 
     val trip = Gson().fromJson(contentText, TripDto::class.java)
 
-    return trip.copy(id = tripId)
+    return trip.copy(id = tripId, createdAt = System.currentTimeMillis())
 }
 
 fun String.escapeForPrompt(): String = trim()

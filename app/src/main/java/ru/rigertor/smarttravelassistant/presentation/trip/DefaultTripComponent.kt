@@ -31,9 +31,9 @@ class DefaultTripComponent @AssistedInject constructor(
         scope.launch {
             store.labels.collect {
                 when (it) {
-                    TripStore.Label.ClickBack -> onBackClicked
+                    TripStore.Label.ClickBack -> onBackClicked()
 
-                    is TripStore.Label.ClickPlace -> onPlaceClicked
+                    is TripStore.Label.ClickPlace -> onPlaceClicked(it.place)
                 }
             }
         }
