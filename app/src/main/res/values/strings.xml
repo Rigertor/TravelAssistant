@@ -20,4 +20,23 @@
 [ВАЖНО]:
 - Ответ должен быть исключительно в формате JSON.
 - Никакого текста до или после JSON-объекта.</string>
+
+    <string name="describe_your_trip">Describe Your Trip</string>
+    <string name="ai_travel_planner">AI Travel Planner</string>
+    <string name="tell_me_about_trip">Tell me about your trip: duration, location, budget, interests</string>
+    <string name="plan_hint">e.g. 2 days in Istanbul, budget-friendly</string>
+    <string name="generate_plan">Generate Plan</string>
+    <string name="examples">Examples:</string>
+    <string name="trip_ai">TripAI</string>
+    <string name="app_description">Your intelligent travel companion. Plan perfect trips in seconds with AI.</string>
+    <string name="smart_routes">Smart Routes</string>
+    <string name="ai_powered">AI Powered</string>
+    <string name="personalized">Personalized</string>
+    <string name="trip_history">Trip History</string>
+    <string name="planning_your_perfect_trip">Planning your perfect trip…</string>
+    <string name="this_will_only_take_a_moment">This will only take a moment</string>
+    <string name="analyzing_your_preferences">Analyzing your preferences</string>
+    <string name="finding_the_best_places">Finding the best places</string>
+    <string name="planning_your_perfect_route">Planning your perfect route</string>
+    <string name="total_budget_per_person">Total Budget per person</string>
 </resources>

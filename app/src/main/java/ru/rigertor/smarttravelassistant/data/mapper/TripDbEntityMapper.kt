@@ -16,6 +16,7 @@ import java.util.Calendar
 import java.util.Date
 
 
+fun List<TripWithDetails>.toEntities() = map { it.toEntity() }
 fun TripBundle.toEntity() = with(trip) {
     Trip(
         id = id,
@@ -29,7 +30,10 @@ fun TripBundle.toEntity() = with(trip) {
         currencySymbol = currencySymbol,
         baseHotel = hotel.toBaseHotel(),
         days = days.map { it.toDailyPlan(places = places) },
-        advice = advice
+        advice = advice,
+        creationDate = Calendar.getInstance().apply {
+            timeInMillis = createdAt
+        }
     )
 }
 
@@ -46,7 +50,10 @@ fun TripWithDetails.toEntity() = with(trip) {
         currencySymbol = currencySymbol,
         baseHotel = hotel.toBaseHotel(),
         days = days.map { it.toDailyPlan() },
-        advice = advice
+        advice = advice,
+        creationDate = Calendar.getInstance().apply {
+            timeInMillis = createdAt
+        }
     )
 }
 

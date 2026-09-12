@@ -68,6 +68,18 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
+    // Preferences DataStore (SharedPreferences like APIs)
+    implementation(libs.androidx.datastore.preferences)
+
+    //MVI
+    implementation(libs.mvikotlin.core)
+    implementation(libs.mvikotlin.main)
+    implementation(libs.mvikotlin.coroutines)
+
+    //Decompose
+    implementation(libs.decompose.core)
+    implementation(libs.decompose.jetpack)
+
     //Database room
     implementation(libs.room.core)
     ksp(libs.room.compiler)
@@ -78,6 +90,8 @@ dependencies {
 
     //Glide (images)
     implementation(libs.glide.compose)
+
+    //Retrofit
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gsonConverter)
     implementation(libs.retrofit.logging.interceptor)

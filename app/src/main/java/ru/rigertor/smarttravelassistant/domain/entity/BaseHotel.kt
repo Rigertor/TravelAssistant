@@ -1,5 +1,8 @@
 package ru.rigertor.smarttravelassistant.domain.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BaseHotel(
     val id: String,
     val name: String,
