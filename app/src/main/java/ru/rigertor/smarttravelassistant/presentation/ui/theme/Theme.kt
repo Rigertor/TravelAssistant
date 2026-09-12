@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -24,6 +25,8 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = White,
     onBackground = LightGray80,
     onSurface = LightGray80,
+    onSurfaceVariant = Color(0xFF94A3B8),
+    outlineVariant = DarkGray40,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -37,6 +40,8 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = DarkBlue10,
     onBackground = DarkBlue10,
     onSurface = DarkBlue10,
+    onSurfaceVariant = GrayText,
+    outlineVariant = LightGray60,
 )
 
 val LocalBackgroundGradient = staticCompositionLocalOf<Brush> {

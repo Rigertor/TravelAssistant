@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +35,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,26 +48,24 @@ fun HistoryContent(component: HistoryComponent, modifier: Modifier = Modifier) {
     val state by component.model.collectAsState()
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
 
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
 
             // Top bar
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 72.dp, bottom = 16.dp)
             ) {
                 IconButton(onClick = component::onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.back),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
@@ -76,7 +74,7 @@ fun HistoryContent(component: HistoryComponent, modifier: Modifier = Modifier) {
 
                 Text(
                     text = stringResource(R.string.trip_history),
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
@@ -84,7 +82,7 @@ fun HistoryContent(component: HistoryComponent, modifier: Modifier = Modifier) {
             }
 
             HorizontalDivider(
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                color = MaterialTheme.colorScheme.outlineVariant
             )
 
             if (state.historyTripList.isEmpty()) {
@@ -96,10 +94,10 @@ fun HistoryContent(component: HistoryComponent, modifier: Modifier = Modifier) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        horizontal = 20.dp,
-                        vertical = 20.dp
+                        horizontal = 16.dp,
+                        vertical = 16.dp
                     ),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
                     items(
@@ -132,19 +130,17 @@ private fun TripHistoryCard(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
-        shadowElevation = 2.dp,
         border = BorderStroke(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+            color = MaterialTheme.colorScheme.outlineVariant
         ),
         onClick = onHistoryItemClick
     ) {
 
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
 
             Row(
@@ -158,21 +154,21 @@ private fun TripHistoryCard(
                     Text(
                         text = trip.destination,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
                         Icon(
-                            modifier = Modifier.size(22.dp),
+                            modifier = Modifier.size(16.dp),
                             imageVector = Icons.Outlined.DateRange,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -180,7 +176,7 @@ private fun TripHistoryCard(
                         Text(
                             text = trip.dates,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -190,56 +186,56 @@ private fun TripHistoryCard(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
-                        contentDescription = null,
-                        tint = Color.Red.copy(alpha = 0.8f)
+                        contentDescription = stringResource(R.string.delete_trip),
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
                 Text(
-                    text = "${trip.days.size} days",
+                    text = stringResource(R.string.days_count, trip.days.size),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
-                    text = "${trip.days.sumOf { it.places.size }} places",
+                    text = stringResource(R.string.places_count, trip.days.sumOf { it.places.size }),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
                     text = "${trip.currencySymbol}${trip.totalBudgetOnPerson} per person",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Icon(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(12.dp),
                     imageVector = Icons.Outlined.AccessTime,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "Saved ${trip.creationDate.formatedFullDate()}",
+                    text = stringResource(R.string.saved_date, trip.creationDate.formatedFullDate()),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -252,13 +248,13 @@ private fun EmptyHistoryContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 120.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
         Icon(
-            modifier = Modifier.size(88.dp),
+            modifier = Modifier.size(64.dp),
             imageVector = Icons.Outlined.LocationOn,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f)
@@ -267,17 +263,17 @@ private fun EmptyHistoryContent() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "No trips yet",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            text = stringResource(R.string.no_trips_yet),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Your saved trips will appear here",
-            style = MaterialTheme.typography.bodyLarge,
+            text = stringResource(R.string.saved_trips_hint),
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
     }

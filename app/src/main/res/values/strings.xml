@@ -23,10 +23,10 @@
 
     <string name="describe_your_trip">Describe Your Trip</string>
     <string name="ai_travel_planner">AI Travel Planner</string>
-    <string name="tell_me_about_trip">Tell me about your trip: duration, location, budget, interests</string>
-    <string name="plan_hint">e.g. 2 days in Istanbul, budget-friendly</string>
+    <string name="tell_me_about_trip">Tell me about your dream trip. Include duration, location, budget, and interests.</string>
+    <string name="plan_hint">e.g., 2 days in Istanbul, budget-friendly, no museums</string>
     <string name="generate_plan">Generate Plan</string>
-    <string name="examples">Examples:</string>
+    <string name="examples">Try these examples:</string>
     <string name="trip_ai">TripAI</string>
     <string name="app_description">Your intelligent travel companion. Plan perfect trips in seconds with AI.</string>
     <string name="smart_routes">Smart Routes</string>
@@ -39,4 +39,18 @@
     <string name="finding_the_best_places">Finding the best places</string>
     <string name="planning_your_perfect_route">Planning your perfect route</string>
     <string name="total_budget_per_person">Total Budget per person</string>
+    <string name="plan_your_trip">Plan Your Trip</string>
+    <string name="back">Back</string>
+    <string name="toggle_theme">Toggle theme</string>
+    <string name="delete_trip">Delete trip</string>
+    <string name="no_trips_yet">No trips yet</string>
+    <string name="saved_trips_hint">Your saved trips will appear here</string>
+    <string name="days_count">%1$d days</string>
+    <string name="places_count">%1$d places</string>
+    <string name="saved_date">Saved %1$s</string>
+    <string name="daily_tips">Daily Tips</string>
+    <string name="general_advice">General Advice</string>
+    <string name="recommended_hotel">Recommended Hotel</string>
+    <string name="nightly_price">%1$s%2$d/night</string>
+    <string name="day_number">Day %1$d</string>
 </resources>

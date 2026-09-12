@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.outlined.AirplanemodeActive
@@ -43,10 +45,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.rigertor.smarttravelassistant.R
 import ru.rigertor.smarttravelassistant.presentation.ui.theme.Blue20
-import kotlin.random.Random
 
 @Composable
 fun LoadingContent(
@@ -84,7 +86,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 3500,
+                durationMillis = 3000,
                 easing = LinearEasing
             ),
             repeatMode = RepeatMode.Restart
@@ -94,7 +96,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.2f,
+        targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
             animation = tween(1200),
             repeatMode = RepeatMode.Reverse
@@ -109,20 +111,21 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 34.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp)
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // AIRPLANE ICON
             Box(
-                modifier = Modifier.size(220.dp),
+                modifier = Modifier.size(128.dp),
                 contentAlignment = Alignment.Center
             ) {
 
 
                 Box(
                     modifier = Modifier
-                        .size(220.dp)
+                        .size(128.dp)
                         .background(
                             brush = Brush.radialGradient(
                                 colors = listOf(
@@ -136,7 +139,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
                 Icon(
                     modifier = Modifier
-                        .size(72.dp)
+                        .size(64.dp)
                         .graphicsLayer(
                             rotationZ = rotation,
                             scaleX = scale,
@@ -148,53 +151,53 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = stringResource(R.string.planning_your_perfect_trip),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = stringResource(R.string.this_will_only_take_a_moment),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
             )
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             LoadingStepCard(
                 icon = Icons.Outlined.AutoAwesome,
                 title = stringResource(R.string.analyzing_your_preferences),
-                initialValueScale = Random.nextFloat()
+                initialValueScale = 1f
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             LoadingStepCard(
                 icon = Icons.Outlined.LocationOn,
                 title = stringResource(R.string.finding_the_best_places),
-                initialValueScale = Random.nextFloat()
+                initialValueScale = 1f
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             LoadingStepCard(
                 icon = Icons.Outlined.AirplanemodeActive,
                 title = stringResource(R.string.planning_your_perfect_route),
-                initialValueScale = Random.nextFloat()
+                initialValueScale = 1f
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
+                    .height(8.dp)
                     .clip(RoundedCornerShape(100.dp)),
                 color = Blue20,
                 trackColor = MaterialTheme.colorScheme.surface
@@ -236,16 +239,16 @@ private fun LoadingStepCard(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 20.dp,
-                    vertical = 22.dp
+                    horizontal = 16.dp,
+                    vertical = 16.dp
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -259,13 +262,13 @@ private fun LoadingStepCard(
                 tint = Blue20
             )
 
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Normal
             )
         }
     }

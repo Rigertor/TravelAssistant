@@ -1,12 +1,10 @@
 package ru.rigertor.smarttravelassistant.presentation.trip
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,14 +12,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,7 +26,6 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Apartment
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,7 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -126,183 +121,179 @@ fun TripContent(
         )
     }
 
-    BottomSheetScaffold(
-        modifier = modifier.fillMaxSize(),
-        scaffoldState = scaffoldState,
-        sheetPeekHeight = 36.dp,
-        sheetShape = RoundedCornerShape(
-            topStart = 32.dp,
-            topEnd = 32.dp
-        ),
-        sheetMaxWidth = Dp.Unspecified,
-        sheetContainerColor = MaterialTheme.colorScheme.background,
-        sheetShadowElevation = 0.dp,
-        sheetDragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 10.dp)
-                    .width(42.dp)
-                    .height(5.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondary)
-                    .clickable {}
-            )
-        },
-        sheetContent = {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val sheetPeekHeight = (maxHeight - 80.dp).coerceAtLeast(0.dp) * 0.5f
+        BottomSheetScaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopBar(
+                    title = state.trip.destination,
+                    subtitle = state.trip.dates,
+                    onBackClick = component::onClickBack
+                )
+            },
+            scaffoldState = scaffoldState,
+            sheetPeekHeight = sheetPeekHeight,
+            sheetShape = RoundedCornerShape(
+                topStart = 24.dp,
+                topEnd = 24.dp
+            ),
+            sheetMaxWidth = Dp.Unspecified,
+            sheetContainerColor = MaterialTheme.colorScheme.surface,
+            sheetShadowElevation = 0.dp,
+            sheetDragHandle = {
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .width(48.dp)
+                        .height(4.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.secondary)
+                )
+            },
+            sheetContent = {
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
-                contentPadding = PaddingValues(
-                    horizontal = 20.dp,
-                    vertical = 12.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(
+                        horizontal = 16.dp,
+                        vertical = 12.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
 
-                item {
+                    item {
 
-                    BudgetCard(
-                        budget = "${state.trip.currencySymbol}${state.trip.totalBudgetOnPerson}",
-                        weather = state.trip.weatherForecast
-                    )
-                }
-
-                item {
-
-                    DaySelector(
-                        days = state.trip.days,
-                        selectedDay = state.currentDay.dayNumber,
-                        onDaySelect = component::onClickDay
-                    )
-                }
-
-                item {
-
-                    HotelCard(
-                        hotel = state.trip.baseHotel
-                    )
-                }
-
-                item {
-
-                    Column {
-
-                        Text(
-                            text = selectedPlan.theme,
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
+                        BudgetCard(
+                            budget = "${state.trip.currencySymbol}${state.trip.totalBudgetOnPerson}",
+                            weather = state.trip.weatherForecast
                         )
+                    }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                    item {
 
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+                        DaySelector(
+                            days = state.trip.days,
+                            selectedDay = state.currentDay.dayNumber,
+                            onDaySelect = component::onClickDay
+                        )
+                    }
 
-                            Text(
-                                text = "${selectedPlan.places.size} places",
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-                            Text(
-                                text = "${selectedPlan.dailyRout.totalDistance} km",
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    if (selectedPlan == state.trip.days.first()) {
+                        item {
+                            HotelCard(
+                                hotel = state.trip.baseHotel,
+                                currencySymbol = state.trip.currencySymbol
                             )
                         }
                     }
-                }
 
-                item {
+                    item {
 
-                    WeatherNoteCard(
-                        text = selectedPlan.weather
-                    )
-                }
+                        Column {
 
-                items(selectedPlan.places) { place ->
+                            Text(
+                                text = selectedPlan.theme,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Medium
+                            )
 
-                    PlaceCard(place = place)
-                }
+                            Spacer(modifier = Modifier.height(4.dp))
 
-                item {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
 
-                    InfoCard(
-                        title = "Daily Tips",
-                        text = selectedPlan.dailyTips
-                    )
-                }
+                                Text(
+                                    text = stringResource(R.string.places_count, selectedPlan.places.size),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = "${selectedPlan.dailyRout.totalDistance} km",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
 
-                item {
+                    item {
 
-                    InfoCard(
-                        title = "General Advice",
-                        text = state.trip.advice
-                    )
-                }
+                        WeatherNoteCard(
+                            text = selectedPlan.weather
+                        )
+                    }
 
-                item {
-                    Spacer(modifier = Modifier.height(64.dp))
+                    items(selectedPlan.places) { place ->
+
+                        PlaceCard(place = place, currencySymbol = state.trip.currencySymbol)
+                    }
+
+                    item {
+
+                        InfoCard(
+                            title = stringResource(R.string.daily_tips),
+                            text = selectedPlan.dailyTips
+                        )
+                    }
+
+                    if (selectedPlan == state.trip.days.last()) {
+                        item {
+                            InfoCard(
+                                title = stringResource(R.string.general_advice),
+                                text = state.trip.advice
+                            )
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(64.dp))
+                    }
                 }
             }
-        }
-    ) {
-
-        Box(
-            modifier = Modifier.fillMaxSize()
         ) {
-            val mapBottomPadding by animateDpAsState(
-                targetValue = when (scaffoldState.bottomSheetState.currentValue) {
-                    SheetValue.Hidden -> 0.dp
-                    SheetValue.PartiallyExpanded -> 420.dp
-                    SheetValue.Expanded -> 700.dp
-                },
-                label = ""
-            )
 
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                properties = MapProperties(
-                    isMyLocationEnabled = false
-                ),
-                mapColorScheme = if (isSystemInDarkTheme())
-                    ComposeMapColorScheme.DARK
-                else
-                    ComposeMapColorScheme.LIGHT,
-                contentPadding = PaddingValues(
-                    bottom = mapBottomPadding
-                ),
-                uiSettings = MapUiSettings(
-                    zoomControlsEnabled = false,
-                    myLocationButtonEnabled = false
-                )
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
 
-                routePoints.forEachIndexed { index, point ->
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    properties = MapProperties(
+                        isMyLocationEnabled = false
+                    ),
+                    mapColorScheme = if (MaterialTheme.colorScheme.background.luminance() < 0.5f)
+                        ComposeMapColorScheme.DARK
+                    else
+                        ComposeMapColorScheme.LIGHT,
+                    contentPadding = PaddingValues(
+                        bottom = sheetPeekHeight
+                    ),
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = false,
+                        myLocationButtonEnabled = false
+                    )
+                ) {
 
-                    Marker(
-                        state = MarkerState(position = point),
-                        title = selectedPlan.places[index].name
+                    routePoints.forEachIndexed { index, point ->
+
+                        Marker(
+                            state = MarkerState(position = point),
+                            title = selectedPlan.places[index].name
+                        )
+                    }
+
+                    Polyline(
+                        points = routePoints,
+                        color = Blue20,
+                        width = 8f
                     )
                 }
 
-                Polyline(
-                    points = routePoints,
-                    color = Blue20,
-                    width = 8f
-                )
             }
-
-            TopBar(
-                title = state.trip.destination,
-                subtitle = state.trip.dates,
-                onBackClick = component::onClickBack,
-                onSettingsClick = {},
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-            )
         }
     }
 }
@@ -312,20 +303,20 @@ private fun TopBar(
     title: String,
     subtitle: String,
     onBackClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(bottom = 8.dp)
-            .background(MaterialTheme.colorScheme.background),
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.back),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -339,28 +330,21 @@ private fun TopBar(
 
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             )
 
             Text(
                 text = subtitle,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        IconButton(onClick = onSettingsClick) {
-
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = null
-            )
-        }
-
-        Spacer(modifier = Modifier.width(80.dp))
+        Spacer(modifier = Modifier.width(48.dp))
     }
 }
 
@@ -372,13 +356,13 @@ private fun BudgetCard(
 
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+            containerColor = Blue20.copy(alpha = 0.1f)
         ),
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(16.dp)
     ) {
 
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
 
             Row(
@@ -387,13 +371,15 @@ private fun BudgetCard(
             ) {
                 Text(
                     text = stringResource(R.string.total_budget_per_person),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
                     text = budget,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
+                    fontWeight = FontWeight.Medium,
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
 
@@ -401,7 +387,8 @@ private fun BudgetCard(
 
             Text(
                 text = weather,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -418,7 +405,7 @@ private fun DaySelector(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        itemsIndexed(days) { index, day ->
+        items(days) { day ->
 
             val selected = day.dayNumber == selectedDay
 
@@ -426,7 +413,7 @@ private fun DaySelector(
                 onClick = {
                     onDaySelect(day)
                 },
-                shape = RoundedCornerShape(18.dp),
+                shape = CircleShape,
                 color = if (selected)
                     Blue20
                 else
@@ -434,10 +421,10 @@ private fun DaySelector(
             ) {
 
                 Text(
-                    text = "Day ${index + 1}",
+                    text = stringResource(R.string.day_number, day.dayNumber),
                     modifier = Modifier.padding(
                         horizontal = 24.dp,
-                        vertical = 14.dp
+                        vertical = 8.dp
                     ),
                     color = if (selected)
                         White
@@ -452,22 +439,23 @@ private fun DaySelector(
 
 @Composable
 private fun PlaceCard(
-    place: Place
+    place: Place,
+    currencySymbol: String
 ) {
 
     Card(
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
         )
     ) {
 
         Row(
-            modifier = Modifier.padding(18.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
 
             Surface(
-                modifier = Modifier.size(52.dp),
+                modifier = Modifier.size(40.dp),
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.secondary
             ) {
@@ -480,7 +468,7 @@ private fun PlaceCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -493,13 +481,15 @@ private fun PlaceCard(
 
                     Text(
                         text = place.time,
+                        style = MaterialTheme.typography.bodySmall,
                         color = Blue20,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Medium
                     )
 
                     Text(
                         text = "${place.durationHours}h",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -507,30 +497,33 @@ private fun PlaceCard(
 
                 Text(
                     text = place.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = place.nameLocal,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = place.description,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    maxLines = 3,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = place.costNote,
+                    text = "$currencySymbol${place.estimatedCost} · ${place.costNote}",
+                    style = MaterialTheme.typography.bodySmall,
                     color = Blue20,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -541,26 +534,27 @@ private fun PlaceCard(
 
 @Composable
 private fun HotelCard(
-    hotel: BaseHotel
+    hotel: BaseHotel,
+    currencySymbol: String
 ) {
 
     Card(
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(16.dp),
         border = BorderStroke(
             1.dp,
             Orange20.copy(alpha = 0.4f)
         ),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFFFBF5)
+            containerColor = Orange20.copy(alpha = 0.1f)
         )
     ) {
 
         Row(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
 
             Surface(
-                modifier = Modifier.size(54.dp),
+                modifier = Modifier.size(48.dp),
                 shape = CircleShape,
                 color = Orange20
             ) {
@@ -573,35 +567,52 @@ private fun HotelCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
 
                 Text(
-                    text = "Recommended Hotel",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    text = stringResource(R.string.recommended_hotel),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = hotel.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = hotel.address,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = hotel.description,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "${hotel.location.lat}, ${hotel.location.lng}",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    text = "%.4f, %.4f".format(hotel.location.lat, hotel.location.lng),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.nightly_price, currencySymbol, hotel.estimatedPricePerNight),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -615,14 +626,14 @@ private fun InfoCard(
 ) {
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondary
         )
     ) {
 
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
 
             Row(
@@ -648,7 +659,8 @@ private fun InfoCard(
 
             Text(
                 text = text,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -660,7 +672,7 @@ private fun WeatherNoteCard(
 ) {
 
     Surface(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.secondary
     ) {
 
@@ -679,7 +691,8 @@ private fun WeatherNoteCard(
 
             Text(
                 text = text,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
