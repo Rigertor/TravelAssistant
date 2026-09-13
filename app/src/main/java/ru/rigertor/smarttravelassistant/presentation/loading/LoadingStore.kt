@@ -7,6 +7,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 import ru.rigertor.smarttravelassistant.domain.entity.Trip
 import ru.rigertor.smarttravelassistant.domain.usecase.BuildTripUseCase
 import ru.rigertor.smarttravelassistant.presentation.loading.LoadingStore.Intent
@@ -86,7 +87,10 @@ class LoadingStoreFactory @Inject constructor(
                     )
                     Log.d("LoadingStore", trip.toString())
                     dispatch(Action.TripLoaded(trip = trip))
-                } catch (_: Exception) {
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (exception: Exception) {
+                    Log.e("LoadingStore", "Trip loading failed: ${exception.javaClass.simpleName}")
                     dispatch(Action.TripLoadingError)
                 }
             }

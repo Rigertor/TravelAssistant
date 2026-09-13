@@ -1,0 +1,215 @@
+{
+  "type": "object",
+  "properties": {
+    "response_language": {
+      "type": "string"
+    },
+    "destination": {
+      "type": "string"
+    },
+    "country_code": {
+      "type": "string"
+    },
+    "dates": {
+      "type": "string"
+    },
+    "weather_forecast": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "currency_symbol": {
+      "type": "string"
+    },
+    "general_advice": {
+      "type": "string"
+    },
+    "date_start_timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp in seconds, not milliseconds"
+    },
+    "date_end_timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp in seconds, not milliseconds"
+    },
+    "total_estimated_budget_per_person": {
+      "type": "integer"
+    },
+    "base_hotel": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "name_local": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price_note": {
+          "type": "string"
+        },
+        "image_query": {
+          "type": "string"
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        },
+        "estimated_price_per_night": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "name_local",
+        "address",
+        "description",
+        "price_note",
+        "image_query",
+        "lat",
+        "lng",
+        "estimated_price_per_night"
+      ],
+      "additionalProperties": false
+    },
+    "days": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "integer"
+          },
+          "date_timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds, not milliseconds"
+          },
+          "theme": {
+            "type": "string"
+          },
+          "weather_note": {
+            "type": "string"
+          },
+          "daily_tips": {
+            "type": "string"
+          },
+          "places": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "time": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "name_local": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "cost_note": {
+                  "type": "string"
+                },
+                "place_type": {
+                  "type": "string"
+                },
+                "image_query": {
+                  "type": "string"
+                },
+                "lat": {
+                  "type": "number"
+                },
+                "lng": {
+                  "type": "number"
+                },
+                "duration_hours": {
+                  "type": "number"
+                },
+                "estimated_cost": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "time",
+                "name",
+                "name_local",
+                "address",
+                "description",
+                "cost_note",
+                "place_type",
+                "image_query",
+                "lat",
+                "lng",
+                "duration_hours",
+                "estimated_cost"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "daily_route_summary": {
+            "type": "object",
+            "properties": {
+              "total_walking_distance_km": {
+                "type": "number"
+              },
+              "transport_used": {
+                "type": "string"
+              },
+              "transport_cost_estimate": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "total_walking_distance_km",
+              "transport_used",
+              "transport_cost_estimate"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "day",
+          "date_timestamp",
+          "theme",
+          "weather_note",
+          "daily_tips",
+          "places",
+          "daily_route_summary"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "response_language",
+    "destination",
+    "country_code",
+    "dates",
+    "weather_forecast",
+    "currency",
+    "currency_symbol",
+    "general_advice",
+    "date_start_timestamp",
+    "date_end_timestamp",
+    "total_estimated_budget_per_person",
+    "base_hotel",
+    "days"
+  ],
+  "additionalProperties": false
+}
