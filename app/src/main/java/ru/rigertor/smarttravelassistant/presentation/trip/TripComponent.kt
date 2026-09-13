@@ -8,6 +8,8 @@ interface TripComponent {
 
     val model: StateFlow<TripStore.State>
 
+    fun onRetryRoute()
+
     fun onClickBack()
 
     fun onClickDay(day: DailyPlan)

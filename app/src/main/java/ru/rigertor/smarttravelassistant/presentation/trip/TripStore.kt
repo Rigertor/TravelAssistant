@@ -5,17 +5,25 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import ru.rigertor.smarttravelassistant.domain.entity.DailyPlan
+import ru.rigertor.smarttravelassistant.domain.entity.Location
 import ru.rigertor.smarttravelassistant.domain.entity.Place
 import ru.rigertor.smarttravelassistant.domain.entity.Trip
+import ru.rigertor.smarttravelassistant.domain.usecase.GetWalkingRouteUseCase
 import ru.rigertor.smarttravelassistant.presentation.trip.TripStore.Intent
 import ru.rigertor.smarttravelassistant.presentation.trip.TripStore.Label
 import ru.rigertor.smarttravelassistant.presentation.trip.TripStore.State
-import javax.inject.Inject
 
 interface TripStore : Store<Intent, State, Label> {
 
     sealed interface Intent {
+
+        data object RetryRoute : Intent
 
         data object ClickBack : Intent
 
@@ -27,7 +35,10 @@ interface TripStore : Store<Intent, State, Label> {
 
     data class State(
         val trip: Trip,
-        val currentDay: DailyPlan = trip.days.first()
+        val currentDay: DailyPlan = trip.days.first(),
+        val route: List<List<Location>> = emptyList(),
+        val routeLoading: Boolean = false,
+        val routeError: Boolean = false
     )
 
     sealed interface Label {
@@ -39,7 +50,8 @@ interface TripStore : Store<Intent, State, Label> {
 }
 
 class TripStoreFactory @Inject constructor(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val getWalkingRouteUseCase: GetWalkingRouteUseCase
 ) {
 
     fun create(trip: Trip): TripStore =
@@ -51,27 +63,70 @@ class TripStoreFactory @Inject constructor(
             reducer = ReducerImpl
         ) {}
 
-    private sealed interface Action
+    private sealed interface Action {
+        data object LoadRoute : Action
+    }
 
     private sealed interface Msg {
+        data object RouteLoading : Msg
+        data class RouteLoaded(val route: List<List<Location>>) : Msg
+        data object RouteFailed : Msg
 
         data class ChangeCurrentDay(val day: DailyPlan) : Msg
     }
 
     private class BootstrapperImpl : CoroutineBootstrapper<Action>() {
         override fun invoke() {
+            dispatch(Action.LoadRoute)
         }
     }
 
-    private class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+    private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+        private var routeJob: Job? = null
+        private val routeCache = mutableMapOf<String, List<List<Location>>>()
+
+        override fun executeAction(action: Action) {
+            when (action) {
+                Action.LoadRoute -> loadRoute()
+            }
+        }
+
+        private fun loadRoute() {
+            routeJob?.cancel()
+            val day = state().currentDay
+            dispatch(Msg.RouteLoading)
+            val cached = routeCache[day.id]
+            if (cached != null) {
+                dispatch(Msg.RouteLoaded(cached))
+                return
+            }
+            routeJob = scope.launch {
+                try {
+                    val route = getWalkingRouteUseCase(day.places.map { it.location })
+                    ensureActive()
+                    routeCache[day.id] = route
+                    dispatch(Msg.RouteLoaded(route))
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (_: Exception) {
+                    ensureActive()
+                    dispatch(Msg.RouteFailed)
+                }
+            }
+        }
+
         override fun executeIntent(intent: Intent) {
             when (intent) {
+                Intent.RetryRoute -> loadRoute()
                 Intent.ClickBack -> {
                     publish(Label.ClickBack)
                 }
 
                 is Intent.ClickDay -> {
-                    dispatch(Msg.ChangeCurrentDay(day = intent.day))
+                    if (state().currentDay != intent.day) {
+                        dispatch(Msg.ChangeCurrentDay(day = intent.day))
+                        loadRoute()
+                    }
                 }
 
                 is Intent.ClickPlace -> {
@@ -84,6 +139,9 @@ class TripStoreFactory @Inject constructor(
     private object ReducerImpl : Reducer<State, Msg> {
         override fun State.reduce(msg: Msg): State =
             when (msg) {
+                Msg.RouteLoading -> copy(route = emptyList(), routeLoading = true, routeError = false)
+                is Msg.RouteLoaded -> copy(route = msg.route, routeLoading = false, routeError = false)
+                Msg.RouteFailed -> copy(route = emptyList(), routeLoading = false, routeError = true)
                 is Msg.ChangeCurrentDay -> {
                     val currDay = msg.day
                     if (currentDay != currDay)

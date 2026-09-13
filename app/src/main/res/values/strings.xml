@@ -53,4 +53,8 @@
     <string name="recommended_hotel">Recommended Hotel</string>
     <string name="nightly_price">%1$s%2$d/night</string>
     <string name="day_number">Day %1$d</string>
+    <string name="route_loading">Строим пеший маршрут…</string>
+    <string name="route_error">Не удалось построить пеший маршрут. Проверьте подключение или попробуйте позже.</string>
+    <string name="route_retry">Повторить</string>
+    <string name="walking_route_attribution">© openrouteservice.org by HeiGIT | © OpenStreetMap contributors</string>
 </resources>

@@ -21,17 +21,20 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val apiKey =
-            property("apiKey")?.toString() ?: error("you should add apikey into gradle.properties")
+        val orsApiKey = providers.gradleProperty("orsApiKey").orElse("").get()
+        buildConfigField("String", "ORS_API_KEY", "\"$orsApiKey\"")
+
+        val apiKey = providers.gradleProperty("apiKey").orNull
+            ?: error("Add apiKey to ~/.gradle/gradle.properties")
         buildConfigField(type = "String", name = "AI_API_KEY", "\"$apiKey\"")
-        val id =
-            property("folderId")?.toString()
-                ?: error("you should add folderId into gradle.properties")
+        val id = providers.gradleProperty("folderId").orNull
+            ?: error("Add folderId to ~/.gradle/gradle.properties")
         buildConfigField(type = "String", name = "YANDEX_FOLDER_ID", "\"$id\"")
-        val promptId =
-            property("promptId")?.toString()
-                ?: error("you should add promptId into gradle.properties")
+        val promptId = providers.gradleProperty("promptId").orNull
+            ?: error("Add promptId to ~/.gradle/gradle.properties")
         buildConfigField(type = "String", name = "YANDEX_PROMPT_ID", "\"$promptId\"")
+        manifestPlaceholders["mapsApiKey"] = providers.gradleProperty("mapsApiKey").orNull
+            ?: error("Add mapsApiKey to ~/.gradle/gradle.properties")
     }
 
     buildTypes {

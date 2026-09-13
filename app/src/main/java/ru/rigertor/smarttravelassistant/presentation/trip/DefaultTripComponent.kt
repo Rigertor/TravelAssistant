@@ -43,6 +43,10 @@ class DefaultTripComponent @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override val model: StateFlow<TripStore.State> = store.stateFlow
 
+    override fun onRetryRoute() {
+        store.accept(TripStore.Intent.RetryRoute)
+    }
+
     override fun onClickBack() {
         store.accept(TripStore.Intent.ClickBack)
     }

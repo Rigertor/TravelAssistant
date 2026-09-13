@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import dagger.assisted.Assisted
@@ -94,7 +95,7 @@ class DefaultRootComponent @AssistedInject constructor(
                 val component = loadingComponentFactory.create(
                     userPrompt = config.userPrompt,
                     onTripLoaded = {
-                        navigation.push(Config.Trip(trip = it))
+                        navigation.replaceCurrent(Config.Trip(trip = it))
                     },
                     componentContext = componentContext
                 )

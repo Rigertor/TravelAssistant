@@ -32,16 +32,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,17 +95,17 @@ fun TripContent(
     val selectedPlan = state.currentDay
 
     val cameraPositionState = rememberCameraPositionState {
-        val location = selectedPlan.places.first().location
+        val location = selectedPlan.places.firstOrNull()?.location
         position = CameraPosition.fromLatLngZoom(
             LatLng(
-                location.lat,
-                location.lng
+                location?.lat ?: 0.0,
+                location?.lng ?: 0.0
             ),
             12f
         )
     }
 
-    val routePoints = remember(selectedPlan) {
+    val placePoints = remember(selectedPlan) {
         selectedPlan.places.map {
             LatLng(it.location.lat, it.location.lng)
         }
@@ -110,7 +113,7 @@ fun TripContent(
 
     LaunchedEffect(selectedPlan) {
 
-        val location = selectedPlan.places.first().location
+        val location = selectedPlan.places.firstOrNull()?.location ?: return@LaunchedEffect
 
         cameraPositionState.animate(
             update = CameraUpdateFactory.newLatLngZoom(
@@ -178,6 +181,25 @@ fun TripContent(
                             selectedDay = state.currentDay.dayNumber,
                             onDaySelect = component::onClickDay
                         )
+                    }
+
+                    item {
+                        if (state.routeLoading) {
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                            Text(text = stringResource(R.string.route_loading))
+                        }
+                        if (state.routeError) {
+                            Text(text = stringResource(R.string.route_error))
+                            TextButton(onClick = component::onRetryRoute) {
+                                Text(text = stringResource(R.string.route_retry))
+                            }
+                        }
+                        if (state.route.isNotEmpty()) {
+                            Text(
+                                text = stringResource(R.string.walking_route_attribution),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
 
                     if (selectedPlan == state.trip.days.first()) {
@@ -278,19 +300,22 @@ fun TripContent(
                     )
                 ) {
 
-                    routePoints.forEachIndexed { index, point ->
-
-                        Marker(
-                            state = MarkerState(position = point),
-                            title = selectedPlan.places[index].name
-                        )
+                    placePoints.forEachIndexed { index, point ->
+                        key(selectedPlan.id, selectedPlan.places[index].id) {
+                            Marker(
+                                state = remember(point) { MarkerState(position = point) },
+                                title = selectedPlan.places[index].name
+                            )
+                        }
                     }
 
-                    Polyline(
-                        points = routePoints,
-                        color = Blue20,
-                        width = 8f
-                    )
+                    state.route.forEach { section ->
+                        Polyline(
+                            points = section.map { LatLng(it.lat, it.lng) },
+                            color = Blue20,
+                            width = 8f
+                        )
+                    }
                 }
 
             }

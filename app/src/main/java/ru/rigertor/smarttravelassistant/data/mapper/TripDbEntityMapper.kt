@@ -29,7 +29,9 @@ fun TripBundle.toEntity() = with(trip) {
         currency = currency,
         currencySymbol = currencySymbol,
         baseHotel = hotel.toBaseHotel(),
-        days = days.map { it.toDailyPlan(places = places) },
+        days = days.map { day ->
+            day.toDailyPlan(places = places.filter { it.dayId == day.id })
+        },
         advice = advice,
         creationDate = Calendar.getInstance().apply {
             timeInMillis = createdAt
